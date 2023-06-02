@@ -1,4 +1,4 @@
-module github.com/getoutreach/go-crypto
+module github.com/ProtonMail/go-crypto
 
 go 1.13
 
