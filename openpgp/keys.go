@@ -122,8 +122,7 @@ func (e *Entity) EncryptionKey(now time.Time) (Key, bool) {
 	// Fail to find any encryption key if the...
 	i := e.PrimaryIdentity()
 	if e.PrimaryKey.KeyExpired(i.SelfSignature, now) || // primary key has expired
-		i.SelfSignature == nil || // user ID has no self-signature
-		i.SelfSignature.SigExpired(now) || // user ID self-signature has expired
+		(i.SelfSignature != nil && i.SelfSignature.SigExpired(now)) || // user ID self-signature has expired
 		e.Revoked(now) || // primary key has been revoked
 		i.Revoked(now) { // user ID has been revoked
 		return Key{}, false
@@ -152,7 +151,7 @@ func (e *Entity) EncryptionKey(now time.Time) (Key, bool) {
 
 	// If we don't have any subkeys for encryption and the primary key
 	// is marked as OK to encrypt with, then we can use it.
-	if i.SelfSignature.FlagsValid && i.SelfSignature.FlagEncryptCommunications &&
+	if (i.SelfSignature != nil || i.SelfSignature.FlagsValid && i.SelfSignature.FlagEncryptCommunications) &&
 		e.PrimaryKey.PubKeyAlgo.CanEncrypt() {
 		return Key{e, e.PrimaryKey, e.PrivateKey, i.SelfSignature, e.Revocations}, true
 	}
@@ -188,8 +187,7 @@ func (e *Entity) signingKeyByIdUsage(now time.Time, id uint64, flags int) (Key, 
 	// Fail to find any signing key if the...
 	i := e.PrimaryIdentity()
 	if e.PrimaryKey.KeyExpired(i.SelfSignature, now) || // primary key has expired
-		i.SelfSignature == nil || // user ID has no self-signature
-		i.SelfSignature.SigExpired(now) || // user ID self-signature has expired
+		(i.SelfSignature != nil && i.SelfSignature.SigExpired(now)) || // user ID self-signature has expired
 		e.Revoked(now) || // primary key has been revoked
 		i.Revoked(now) { // user ID has been revoked
 		return Key{}, false

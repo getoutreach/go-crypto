@@ -381,7 +381,7 @@ func encrypt(keyWriter io.Writer, dataWriter io.Writer, to []*Entity, signed *En
 		}
 
 		sig := to[i].PrimaryIdentity().SelfSignature
-		if !sig.SEIPDv2 {
+		if sig == nil || !sig.SEIPDv2 {
 			aeadSupported = false
 		}
 
@@ -465,7 +465,10 @@ func Sign(output io.Writer, signed *Entity, hints *FileHints, config *packet.Con
 		hashToHashId(crypto.SHA3_512),
 	}
 	defaultHashes := candidateHashes[0:1]
-	preferredHashes := signed.PrimaryIdentity().SelfSignature.PreferredHash
+	var preferredHashes []uint8
+	if signed.PrimaryIdentity().SelfSignature != nil {
+		preferredHashes = signed.PrimaryIdentity().SelfSignature.PreferredHash
+	}
 	if len(preferredHashes) == 0 {
 		preferredHashes = defaultHashes
 	}
