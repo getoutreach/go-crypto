@@ -151,7 +151,7 @@ func (e *Entity) EncryptionKey(now time.Time) (Key, bool) {
 
 	// If we don't have any subkeys for encryption and the primary key
 	// is marked as OK to encrypt with, then we can use it.
-	if (i.SelfSignature != nil || i.SelfSignature.FlagsValid && i.SelfSignature.FlagEncryptCommunications) &&
+	if (i.SelfSignature == nil || (i.SelfSignature.FlagsValid && i.SelfSignature.FlagEncryptCommunications)) &&
 		e.PrimaryKey.PubKeyAlgo.CanEncrypt() {
 		return Key{e, e.PrimaryKey, e.PrivateKey, i.SelfSignature, e.Revocations}, true
 	}
