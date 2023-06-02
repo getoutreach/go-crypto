@@ -385,10 +385,20 @@ func encrypt(keyWriter io.Writer, dataWriter io.Writer, to []*Entity, signed *En
 			aeadSupported = false
 		}
 
-		candidateCiphers = intersectPreferences(candidateCiphers, sig.PreferredSymmetric)
-		candidateHashes = intersectPreferences(candidateHashes, sig.PreferredHash)
-		candidateCipherSuites = intersectCipherSuites(candidateCipherSuites, sig.PreferredCipherSuites)
-		candidateCompression = intersectPreferences(candidateCompression, sig.PreferredCompression)
+		var sigPreferredSymmetric []uint8
+		var sigPreferredHash []uint8
+		var sigPreferredCipherSuites [][2]uint8
+		var sigPreferredCompression []uint8
+		if sig != nil {
+			sigPreferredSymmetric = sig.PreferredSymmetric
+			sigPreferredHash = sig.PreferredHash
+			sigPreferredCipherSuites = sig.PreferredCipherSuites
+			sigPreferredCompression = sig.PreferredCompression
+		}
+		candidateCiphers = intersectPreferences(candidateCiphers, sigPreferredSymmetric)
+		candidateHashes = intersectPreferences(candidateHashes, sigPreferredHash)
+		candidateCipherSuites = intersectCipherSuites(candidateCipherSuites, sigPreferredCipherSuites)
+		candidateCompression = intersectPreferences(candidateCompression, sigPreferredCompression)
 	}
 
 	// In the event that the intersection of supported algorithms is empty we use the ones
