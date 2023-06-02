@@ -794,7 +794,7 @@ func (pk *PublicKey) KeyExpired(sig *Signature, currentTime time.Time) bool {
 	if pk.CreationTime.After(currentTime) {
 		return true
 	}
-	if sig.KeyLifetimeSecs == nil || *sig.KeyLifetimeSecs == 0 {
+	if sig == nil || sig.KeyLifetimeSecs == nil || *sig.KeyLifetimeSecs == 0 {
 		return false
 	}
 	expiry := pk.CreationTime.Add(time.Duration(*sig.KeyLifetimeSecs) * time.Second)
